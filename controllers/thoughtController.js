@@ -10,7 +10,7 @@ module.exports = {
     },
 
     // Get one single thought by Id
-    getsingleThought(req, res) {
+    getSingleThought(req, res) {
         Thought.findOne({ _id: req.params.thoughtId })
             .select('-__v')
             .then((thought) => 
@@ -66,5 +66,41 @@ module.exports = {
                         { new: true }
                     )
             )
+            .then((user) => 
+                !user
+                    ? res.status(404).json({ message: 'Thought deleted but no user with this ID!' })
+                    : res.json({ message: 'Thought successfully deleted! '})
+            )
+            .catch((err) => res.status(500).json(err));
+    },
+
+    // Add a new reaction to a thought
+    addReaction(req, res) {
+        Thought.findOneAndUpdate(
+            { _id: req.params.thoughtId},
+            { $addToSet: { reactions: req.body }},
+            { runValidators: true, new: true }
+        )
+        .then((thought) => 
+            !thought
+                ? res.json(404).json({ message: 'No thought with this ID!' })
+                : res.json(thought)
+        ) 
+        .catch((err) => res.status(500).json(err));
+    },
+
+    // Remove a reaction from a thought
+    removeReaction(req, res) {
+        Thought.findOneAndUpdate(
+            { _id: req.params.thoughtId},
+            { $pull: { reactions: { reactionId: req.params.reactionId } } },
+            { runValidators: true, new: true }
+        )
+        .then((thought) => 
+            !thought
+                ? res.json(404).json({ message: 'No thought with this ID!' })
+                : res.json(thought)
+        ) 
+        .catch((err) => res.status(500).json(err));
     }
 };
