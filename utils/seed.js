@@ -1,14 +1,9 @@
 const connection = require('../config/connection');
 const { User, Thought, Reaction } = require('../models');
-const {
-  getRandomName,
-  getRandomComments,
-  getRandomPost,
-  genRandomIndex,
-} = require('./data');
 
-// Start the seeding runtime timer
-console.time('seeding');
+connection.on('error', (err) => err);
+
+
 
 // Creates a connection to mongodb
 connection.once('open', async () => {
