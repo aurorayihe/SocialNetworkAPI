@@ -2,8 +2,7 @@ const connection = require('../config/connection');
 const { User, Thought } = require('../models');
 const {
   getRandomName,
-  getRandonThoughts,
-  getRandomReactions,
+  getRandomThoughts,
 } = require('./data');
 
 connection.on('error', (err) => err);
@@ -35,7 +34,7 @@ connection.once('open', async () => {
 
 
   // Add randomly generated thoughts to the database
-  const thoughts = getRandonThoughts(5);
+  const thoughts = getRandomThoughts(5);
 
   await Thought.collection.insertMany(thoughts);
 
