@@ -1,5 +1,10 @@
 const connection = require('../config/connection');
-const { User, Thought, Reaction } = require('../models');
+const { User, Thought } = require('../models');
+const {
+  getRandomName,
+  getRandonThoughts,
+  getRandomReactions,
+} = require('./data');
 
 connection.on('error', (err) => err);
 
@@ -10,33 +15,34 @@ connection.once('open', async () => {
   // Delete the entries in the collection
   await User.deleteMany({});
   await Thought.deleteMany({});
-  await Reaction.deleteMany({});
 
-  // Empty arrays for randomly generated posts and comments
-  const comments = [...getRandomComments(10)];
-  const posts = [];
+  // Add randomly generated users to the database
+  const users = [];
 
-  // Makes comments array
-  const makePost = (text) => {
-    posts.push({
-      text,
-      username: getRandomName().split(' ')[0],
-      comments: [comments[genRandomIndex(comments)]._id],
-    });
+  for(let i = 0; i < 5; i++) {
+    const thoughts = getRandonThoughts(2);
+
+    const username = getRandomName();
+    const email = `${username}@gmail.com`;
+    users.push({
+      username,
+      email,
+      thoughts,
+    })
   };
 
-  // Wait for the comments to be inserted into the database
-  await Comment.collection.insertMany(comments);
+  await User.collection.insertMany(users);
 
-  // For each of the comments that exist, make a random post of 10 words
-  comments.forEach(() => makePost(getRandomPost(10)));
 
-  // Wait for the posts array to be inserted into the database
-  await Post.collection.insertMany(posts);
+  // Add randomly generated thoughts to the database
+  const thoughts = getRandonThoughts(5);
 
-  // Log out a pretty table for comments and posts
-  console.table(comments);
-  console.table(posts);
+  await Thought.collection.insertMany(thoughts);
+
+
+  // Log out a pretty table for users and thoughts
+  console.table(users);
+  console.table(thoughts);
   console.timeEnd('seeding complete 🌱');
   process.exit(0);
 });
