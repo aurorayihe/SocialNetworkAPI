@@ -1,4 +1,4 @@
-const { User } = require('../../UCI-VIRT-FSF-PT-06-2022-U-LOLC/01-Class-Content/18-NoSQL/01-Activities/26-Stu_CRUD-Subdoc/Solved/models');
+const User = require('../models/User');
 const Thought = require('../models/Thought');
 
 module.exports = {
