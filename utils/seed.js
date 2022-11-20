@@ -19,7 +19,7 @@ connection.once('open', async () => {
   const users = [];
 
   for(let i = 0; i < 5; i++) {
-    const thoughts = getRandonThoughts(2);
+    const thoughts = getRandomThoughts(2);
 
     const username = getRandomName();
     const email = `${username}@gmail.com`;

@@ -25,17 +25,8 @@ module.exports = {
     createThought(req, res) {
         Thought.create(req.body)
             .then((thought) => {
-                return User.findOneAndUpdate(
-                    { _id: req.body.userId },
-                    { $addToSet: { thoughts: thoughtId } },
-                    { new: true }
-                );
+                res.json(thought)
             })
-            .then((user) => 
-                !user
-                    ? res.status(404).json({ message: 'Thought created, but found no user with that ID'})
-                    : res.json('Created the thought!')
-            )
             .catch((err) => res.status(500).json(err));
     },
 
@@ -56,20 +47,11 @@ module.exports = {
 
     // Deletes a thought from the database, and remove it from the user
     deleteThought(req, res) {
-        Thought.findOneAndRemove({ _id: req.params.thoughtId })
+        Thought.findOneAndDelete({ _id: req.params.thoughtId })
             .then((thought) => 
                 !thought
                     ? res.status(404).json({ message: 'No thought with this ID! '})
-                    : User.findOneAndUpdate(
-                        { thoughts: req.params.thoughtId },
-                        { $pull: {thoughts: req.params.thoughtId } },
-                        { new: true }
-                    )
-            )
-            .then((user) => 
-                !user
-                    ? res.status(404).json({ message: 'Thought deleted but no user with this ID!' })
-                    : res.json({ message: 'Thought successfully deleted! '})
+                    : User.deleteMany({ _id: {$in: thought.user }})
             )
             .catch((err) => res.status(500).json(err));
     },
